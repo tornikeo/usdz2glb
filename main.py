@@ -15,7 +15,7 @@ async def create_upload_file(file: UploadFile):
 
 
     bpy.ops.wm.usd_import("EXEC_DEFAULT", filepath=str(filepath))
-    outfile = sess / filepath.with_suffix('glb')
+    outfile = sess / filepath.with_suffix('.glb')
 
     bpy.ops.export_scene.gltf(
         filepath=str(outfile),

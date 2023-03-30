@@ -1,4 +1,5 @@
-FROM python:3.10
+# FROM python:3.10
+FROM linuxserver/blender:3.5.0
 # Fix tzdata asking for "Please select the geographic area in which you live..."
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -6,12 +7,20 @@ RUN apt update && apt-get install git curl -y
 
 # To fix pyzmq build error "g++ not found"
 RUN apt install build-essential -y
+
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3.5 \
+    python3-pip \
+    && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+
 WORKDIR /workdir
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
-RUN apt install nodejs npm -y
-RUN npm install three three-usdz-loader
 COPY . .
 
 ENV PORT 8080

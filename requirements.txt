@@ -9,5 +9,4 @@ jupyterlab
 itsdangerous
 Pillow
 firebase_admin
-usd-core
 bpy
