@@ -36,5 +36,5 @@ ENV BACKEND_URL ${BACKEND_URL}
 
 EXPOSE ${PORT}
 # DEVELOPMENT=False uvicorn main:app --host 0.0.0.0 --port 8090 --reload --log-level debug
-# ENTRYPOINT ["/bin/sh","-c"]
+ENTRYPOINT ["/bin/sh","-c"]
 CMD uvicorn main:app --host 0.0.0.0 --port 8080 --log-level debug --reload
