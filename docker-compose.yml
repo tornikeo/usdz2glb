@@ -1,0 +1,37 @@
+volumes:
+  cache:
+services:
+  app:
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/tmp/secrets/key.json
+    build: 
+      context: .
+      args:
+        - DEVELOPMENT=True
+        - GCLOUD_BUCKET=vimage-image-api-io-tmp24h
+        - BACKEND_URL=http://backend:8080
+    volumes:
+      - .:/workdir
+      # - /root/.config/gcloud:/root/.config/gcloud:ro
+      - ${PWD}/store/gcloud/key.json:/tmp/secrets/key.json
+    ports:
+      - 9999:8080
+  # backend:
+  #   build:
+  #     context: backend/
+  #     args:
+  #       - GOOGLE_APPLICATION_CREDENTIALS=gcloud_key.secret.json
+  #       - GCLOUD_BUCKET=vimage-image-api-io-tmp24h
+  #   volumes:
+  #     - ./backend:/workdir
+  #     - cache:/root/.cache
+  #     - /root/.config/gcloud:/root/.config/gcloud:ro
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: 1
+  #             capabilities: [gpu]
+      
+    
