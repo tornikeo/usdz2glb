@@ -23,8 +23,7 @@ RUN pip3 install -r requirements.txt
 
 COPY . .
 
-ARG PORT=8080
-ENV PORT=${PORT}
+ENV PORT=8080
 
 ARG DEVELOPMENT='False'
 ENV DEVELOPMENT ${DEVELOPMENT}
@@ -35,7 +34,7 @@ ENV GCLOUD_BUCKET ${GCLOUD_BUCKET}
 ARG BACKEND_URL
 ENV BACKEND_URL ${BACKEND_URL}
 
-EXPOSE $PORT
+EXPOSE ${PORT}
 # DEVELOPMENT=False uvicorn main:app --host 0.0.0.0 --port 8090 --reload --log-level debug
 # ENTRYPOINT ["/bin/sh","-c"]
 CMD uvicorn main:app --host 0.0.0.0 --port 8080 --log-level debug --reload
