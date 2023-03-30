@@ -23,7 +23,8 @@ RUN pip3 install -r requirements.txt
 
 COPY . .
 
-ENV PORT 8080
+ARG PORT=8080
+ENV PORT=${PORT}
 
 ARG DEVELOPMENT='False'
 ENV DEVELOPMENT ${DEVELOPMENT}
@@ -36,4 +37,5 @@ ENV BACKEND_URL ${BACKEND_URL}
 
 EXPOSE $PORT
 # DEVELOPMENT=False uvicorn main:app --host 0.0.0.0 --port 8090 --reload --log-level debug
-CMD uvicorn main:app --host 0.0.0.0 --port ${PORT} --log-level debug 
+# ENTRYPOINT ["/bin/sh","-c"]
+CMD uvicorn main:app --host 0.0.0.0 --port 8080 --log-level debug --reload

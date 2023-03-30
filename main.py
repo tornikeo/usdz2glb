@@ -2,7 +2,6 @@ from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import FileResponse
 import tempfile
 from pathlib import Path
-import bpy
 
 app = FastAPI(debug=True)
 
@@ -12,6 +11,7 @@ async def create_upload_file(file: UploadFile):
     contents = await file.read()
     filepath = (sess / file.filename)
     filepath.write_bytes(contents)
+    import bpy
 
 
     bpy.ops.wm.usd_import("EXEC_DEFAULT", filepath=str(filepath))

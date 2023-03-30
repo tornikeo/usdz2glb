@@ -2,20 +2,11 @@ volumes:
   cache:
 services:
   app:
-    environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/tmp/secrets/key.json
-    build: 
-      context: .
-      args:
-        - DEVELOPMENT=True
-        - GCLOUD_BUCKET=vimage-image-api-io-tmp24h
-        - BACKEND_URL=http://backend:8080
+    build: .
     volumes:
       - .:/workdir
-      # - /root/.config/gcloud:/root/.config/gcloud:ro
-      - ${PWD}/store/gcloud/key.json:/tmp/secrets/key.json
     ports:
-      - 9999:8080
+      - 8091:8080
   # backend:
   #   build:
   #     context: backend/
