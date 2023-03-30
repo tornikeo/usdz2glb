@@ -1,4 +1,4 @@
-FROM python:3.8-slim-bullseye
+FROM python:3.10
 # Fix tzdata asking for "Please select the geographic area in which you live..."
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -25,4 +25,4 @@ ENV BACKEND_URL ${BACKEND_URL}
 
 EXPOSE $PORT
 # DEVELOPMENT=False uvicorn main:app --host 0.0.0.0 --port 8090 --reload --log-level debug
-CMD uvicorn api.main:app --host 0.0.0.0 --port ${PORT} --log-level debug 
+CMD uvicorn main:app --host 0.0.0.0 --port ${PORT} --log-level debug 
