@@ -10,6 +10,8 @@ WORKDIR /workdir
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
+RUN apt install nodejs npm -y
+RUN npm install three three-usdz-loader
 COPY . .
 
 ENV PORT 8080
