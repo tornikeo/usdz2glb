@@ -1,11 +1,17 @@
+import time
 import pytest, tempfile, shutil
 from pathlib import Path
 
+res_p = Path(f'store/gen/{time.time_ns()//1000}')
+res_p.mkdir(parents=True,exist_ok=True)
 
 @pytest.mark.parametrize("file", [
     Path("store/sneaker_airforce.usdz"),
     Path("store/Fox/glTF"),
     Path("store/LibertyStatue"),
+    Path("store/scene.gltf"),
+    Path("store/LibertyStatue"),
+    Path("store/LibertyStatue/LibertStatue.obj"),
 ])
 def test_main(tmp_path: Path, file:Path):
     from fastapi.testclient import TestClient
@@ -20,12 +26,8 @@ def test_main(tmp_path: Path, file:Path):
         resp = client.post("/convert", 
             files={"file": (upload.name, upload.open("rb"))})
         assert resp.status_code == 200
-        res = (tmp_path / file.name /  'down.glb')
-        res.parent.mkdir(exist_ok=True)
+        res = res_p/f'{file.name.lower()}-down.glb'
         res.write_bytes(resp.content)
         print("FILE HERE >>>>>>>>>>>",res)
-        
-
-        # print((tmp_path / 'down.glb'))
 
         

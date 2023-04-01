@@ -23,13 +23,13 @@ async def create_upload_file(file: UploadFile):
     objs = [ob for ob in bpy.context.scene.objects if ob.type in ('CAMERA', 'MESH')]
     bpy.ops.object.delete({"selected_objects": objs})
 
-
     if filepath.suffix == '.usdz':
         bpy.ops.wm.usd_import("EXEC_DEFAULT", filepath=str(filepath))
-
-        bpy.ops.export_scene.gltf(
-            filepath=str(outfile),
-            export_format="GLB",
+    elif filepath.suffix == '.gltf':
+        bpy.ops.import_scene.gltf(filepath=str(filepath))
+    elif filepath.suffix == '.obj':
+        bpy.ops.import_scene.obj(
+            filepath=str(filepath)
         )
     elif filepath.suffix == '.zip':
         folder_unpacked = Path(filepath).with_suffix('')
@@ -42,18 +42,18 @@ async def create_upload_file(file: UploadFile):
             gltf_file = list(folder_unpacked.glob('**/*.gltf'))[0]
             print("Detected GLTF, at", folder_unpacked)
             bpy.ops.import_scene.gltf(filepath=str(gltf_file))
-            bpy.ops.export_scene.gltf(filepath=str(outfile), export_format='GLB')
         elif len(list(folder_unpacked.glob('**/*.obj')))>0:
             obj_file = list(folder_unpacked.glob('**/*.obj'))[0]
             bpy.ops.import_scene.obj(
                 filepath=str(obj_file)
             )
-            bpy.ops.export_scene.gltf(
-                filepath=str(outfile),
-                export_format="GLB",
-            )
         else:
             raise HTTPException(detail=f"Provided zip file didn't have gltf or obj files in it {list(folder_unpacked.glob('*'))}.",status_code=500)
+    
+    bpy.ops.export_scene.gltf(
+        filepath=str(outfile),
+        export_format="GLB",
+    )
     return FileResponse(
         outfile,
         filename=outfile.name,
