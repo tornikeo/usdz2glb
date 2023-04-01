@@ -18,7 +18,6 @@ async def create_upload_file(file: UploadFile):
     outfile = sess / filepath.with_suffix(".glb")
 
     import bpy
-    import bpy
 
     objs = [ob for ob in bpy.context.scene.objects if ob.type in ('CAMERA', 'MESH')]
     bpy.ops.object.delete({"selected_objects": objs})
