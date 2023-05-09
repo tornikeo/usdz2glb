@@ -31,3 +31,18 @@ def test_main(tmp_path: Path, file:Path):
         print("FILE HERE >>>>>>>>>>>",res)
 
         
+url = "https://storage.googleapis.com/tornikeo-portfolio-cdn/sneaker_airforce.usdz"
+
+@pytest.mark.parametrize("url", [url])
+def test_from_url(tmp_path: Path, url:str):
+    from fastapi.testclient import TestClient
+    from main import app
+
+    with TestClient(app) as client:
+        resp = client.post("/convert-from-url", 
+            json={"url": url}
+        )
+        assert resp.status_code == 200
+        res = res_p/f'{time.time_ns()}-down.glb'
+        res.write_bytes(resp.content)
+        print("FILE HERE >>>>>>>>>>>",res)

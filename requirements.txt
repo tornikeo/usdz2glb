@@ -10,3 +10,4 @@ itsdangerous
 Pillow
 firebase_admin
 bpy
+requests
