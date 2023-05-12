@@ -172,11 +172,18 @@ async def create_upload_file(request: UrlToUrlRequest):
     )
 
     # upload file
-    files = {'file': open(outfile, 'rb')}
+#     files = {'file': open(outfile, 'rb')}
     
+#     return {"success": True, 'upload_response': requests.put(
+#             request.upload_url, 
+#             headers={
+#                 'Content-Type': 'application/octet-stream',
+#             },
+#             files=files).status_code}
+
     return {"success": True, 'upload_response': requests.put(
             request.upload_url, 
+            data=open(outfile, 'rb'),
             headers={
                 'Content-Type': 'application/octet-stream',
-            },
-            files=files).status_code}
+            }).status_code}
