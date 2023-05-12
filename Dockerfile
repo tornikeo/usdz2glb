@@ -1,5 +1,6 @@
 # FROM python:3.10
-FROM linuxserver/blender:3.5.0
+# FROM linuxserver/blender:3.5.0
+FROM linuxserver/blender:3.5.1
 
 # Fix tzdata asking for "Please select the geographic area in which you live..."
 ARG DEBIAN_FRONTEND=noninteractive
@@ -37,6 +38,7 @@ ENV BACKEND_URL ${BACKEND_URL}
 
 EXPOSE ${PORT}
 # DEVELOPMENT=False uvicorn main:app --host 0.0.0.0 --port 8090 --reload --log-level debug
-ENTRYPOINT uvicorn main:app --host 0.0.0.0 --port 8080 --log-level debug --reload
+ENTRYPOINT /bin/bash
+CMD uvicorn main:app --host 0.0.0.0 --port 8080 --log-level debug --reload
 # ENTRYPOINT /bin/sh
 # CMD uvicorn main:app --host 0.0.0.0 --port 8080 --log-level debug --reload

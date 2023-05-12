@@ -31,9 +31,12 @@ def test_main(tmp_path: Path, file:Path):
         print("FILE HERE >>>>>>>>>>>",res)
 
         
-url = "https://storage.googleapis.com/tornikeo-portfolio-cdn/sneaker_airforce.usdz"
+urls = [
+    "https://storage.googleapis.com/tornikeo-portfolio-cdn/sneaker_airforce.usdz",
+    'https://openair3d-prod.s3.us-east-2.amazonaws.com/data/174/models/object/1000/object3d.usdz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA5A4UAIRZ3TLUF6XT%2F20230512%2Fus-east-2%2Fs3%2Faws4_request&X-Amz-Date=20230512T124408Z&X-Amz-Expires=18000&X-Amz-Signature=8c6d84ab98137be8d1ac44adfc9122a7a9699fbe443591e940bf8de8093e3ac3&X-Amz-SignedHeaders=host'
+]
 
-@pytest.mark.parametrize("url", [url])
+@pytest.mark.parametrize("url", urls)
 def test_from_url(tmp_path: Path, url:str):
     from fastapi.testclient import TestClient
     from main import app

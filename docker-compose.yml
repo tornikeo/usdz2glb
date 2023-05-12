@@ -7,7 +7,6 @@ services:
       - .:/workdir
     ports:
       - 8091:8080
-    entrypoint: bash
   # backend:
   #   build:
   #     context: backend/
