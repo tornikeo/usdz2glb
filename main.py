@@ -174,4 +174,4 @@ async def create_upload_file(request: UrlToUrlRequest):
     # upload file
     files = {'file': open(outfile, 'rb')}
     
-    return {"success": True, 'upload_response': requests.put(request.upload_url, files=files).content.decode('utf-8')}
+    return {"success": True, 'upload_response': requests.put(request.upload_url, files=files).status_code}
