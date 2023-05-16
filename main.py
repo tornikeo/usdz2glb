@@ -6,8 +6,11 @@ import tempfile
 from pathlib import Path
 import shutil, tempfile
 from pathlib import Path
+from config import get_config
+import bpy
 
 app = FastAPI(debug=True)
+config = get_config()
 
 @app.post("/convert")
 async def create_upload_file(file: UploadFile):
@@ -16,8 +19,6 @@ async def create_upload_file(file: UploadFile):
     filepath = sess / file.filename
     filepath.write_bytes(contents)
     outfile = sess / filepath.with_suffix(".glb")
-
-    import bpy
 
     objs = [ob for ob in bpy.context.scene.objects if ob.type in ('CAMERA', 'MESH')]
     bpy.ops.object.delete({"selected_objects": objs})
@@ -76,7 +77,6 @@ async def create_upload_file(request: UrlRequest):
     # filepath.write_bytes(contents)
     outfile = sess / filepath.with_suffix(".glb")
 
-    import bpy
     bpy.ops.wm.read_factory_settings(use_empty=True)
     objs = [ob for ob in bpy.context.scene.objects if ob.type in ('CAMERA', 'MESH')]
     bpy.ops.object.delete({"selected_objects": objs})
@@ -123,6 +123,7 @@ class UrlToUrlRequest(BaseModel):
 
 @app.post("/convert-from-url-to-url")
 async def create_upload_file(request: UrlToUrlRequest):
+
     # download file
     sess = Path(tempfile.mkdtemp())
     filename = 'upload.usdz'
@@ -132,13 +133,14 @@ async def create_upload_file(request: UrlToUrlRequest):
     # contents = await file.read()
     # filepath = sess / file.filename
     # filepath.write_bytes(contents)
-    outfile = sess / filepath.with_suffix(".glb")
+    filename = 'upload.glb'
+    outfile = sess / filename
 
-    import bpy
     bpy.ops.wm.read_factory_settings(use_empty=True)
     objs = [ob for ob in bpy.context.scene.objects if ob.type in ('CAMERA', 'MESH')]
     bpy.ops.object.delete({"selected_objects": objs})
 
+    # TODO: If file id invalid and cannot be open error is logged to console but not thrown
     if filepath.suffix == '.usdz':
         bpy.ops.wm.usd_import("EXEC_DEFAULT", filepath=str(filepath))
     elif filepath.suffix == '.gltf':
@@ -165,21 +167,15 @@ async def create_upload_file(request: UrlToUrlRequest):
             )
         else:
             raise HTTPException(detail=f"Provided zip file didn't have gltf or obj files in it {list(folder_unpacked.glob('*'))}.",status_code=500)
-    
+
+    # TODO: Clear blender to save memory (if needed)
     bpy.ops.export_scene.gltf(
         filepath=str(outfile),
         export_format="GLB",
+        export_draco_mesh_compression_enable=True,
+        export_draco_position_quantization=config.QUANTIZATION
     )
 
-    # upload file
-#     files = {'file': open(outfile, 'rb')}
-    
-#     return {"success": True, 'upload_response': requests.put(
-#             request.upload_url, 
-#             headers={
-#                 'Content-Type': 'application/octet-stream',
-#             },
-#             files=files).status_code}
 
     return {"success": True, 'upload_response': requests.put(
             request.upload_url, 
@@ -187,3 +183,4 @@ async def create_upload_file(request: UrlToUrlRequest):
             headers={
                 'Content-Type': 'application/octet-stream',
             }).status_code}
+
