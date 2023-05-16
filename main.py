@@ -7,6 +7,7 @@ from pathlib import Path
 import shutil, tempfile
 from pathlib import Path
 from config import get_config
+from ktx2_compress import ktx2_compression
 import bpy
 
 app = FastAPI(debug=True)
@@ -176,10 +177,13 @@ async def create_upload_file(request: UrlToUrlRequest):
         export_draco_position_quantization=config.QUANTIZATION
     )
 
+    filename = 'upload_compressed.glb'
+    outfile_compressed = sess / filename
+    upload_File = ktx2_compression(outfile, outfile_compressed)
 
     return {"success": True, 'upload_response': requests.put(
             request.upload_url, 
-            data=open(outfile, 'rb'),
+            data=open(upload_File, 'rb'),
             headers={
                 'Content-Type': 'application/octet-stream',
             }).status_code}
