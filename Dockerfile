@@ -25,6 +25,8 @@ RUN pip3 install -r requirements.txt
 
 COPY . .
 
+RUN chmod u+x ./binaries/gltfpack
+
 ENV PORT=8080
 
 ARG DEVELOPMENT='False'
