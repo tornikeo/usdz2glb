@@ -10,7 +10,7 @@ from config import get_config
 from ktx2_compress import ktx2_compression
 import bpy
 import requests
-from pydantic import BaseModel
+
 
 config = get_config();
 def convert_usdz_file_to_glb(file_usdz_src, file_glb_dest):
@@ -54,7 +54,7 @@ def convert_usdz_file_to_glb(file_usdz_src, file_glb_dest):
         export_draco_position_quantization=config.QUANTIZATION
     )
 
-def convert_usdz_upload_glb(url_download, url_upload):
+async def convert_usdz_upload_glb(url_download, url_upload):
     # download file
     sess = Path(tempfile.mkdtemp())
     filename = 'upload.usdz'
