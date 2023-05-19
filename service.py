@@ -68,7 +68,7 @@ def convert_usdz_file_to_glb(file_usdz_src, file_glb_dest):
         export_draco_position_quantization=config.QUANTIZATION
     )
 
-async def convert_usdz_upload_glb(url_download, url_upload):
+async def convert_usdz_upload_glb(url_download, url_upload, upload_ktx2_url):
 
     print("Downloading USDZ File")
     # download file
@@ -84,16 +84,25 @@ async def convert_usdz_upload_glb(url_download, url_upload):
     # Convert usdz file to glb file
     convert_usdz_file_to_glb(file_usdz, file_glb);
 
+    print("Upload GLB File")
+    # Upload file
+    upload_result = requests.put(
+        url_upload, 
+        data=open(file_glb, 'rb'),
+        headers={
+            'Content-Type': 'application/octet-stream',
+        });
+
     print("Run ktx2 compression")
     # Compress glb file using ktx2
     filename = 'upload_compressed.glb'
     file_glb_compressed = sess / filename
     upload_File = ktx2_compression(file_glb, file_glb_compressed)
 
-    print("Upload GLB File")
+    print("Upload ktx2 File")
     # Upload file
     upload_result = requests.put(
-        url_upload, 
+        upload_ktx2_url, 
         data=open(upload_File, 'rb'),
         headers={
             'Content-Type': 'application/octet-stream',
@@ -103,8 +112,8 @@ async def convert_usdz_upload_glb(url_download, url_upload):
 
 
 # TODO: Handle errors?
-async def convert_and_send_confirmation(url_download, url_upload, response_payload:ResponseInfo):
-    await convert_usdz_upload_glb(url_download, url_upload)
+async def convert_and_send_confirmation(url_download, url_upload, upload_ktx2_url, response_payload:ResponseInfo):
+    await convert_usdz_upload_glb(url_download, url_upload, upload_ktx2_url)
 
     # Send Response  
     payload = {
