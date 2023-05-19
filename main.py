@@ -20,10 +20,12 @@ config = get_config()
 class UrlToUrlRequest(BaseModel):
     url: str
     upload_url: str
+    upload_ktx2_url: str
 
 class UrlToUrlQueueRequest(BaseModel):
     to_convert_url: str
     to_upload_url: str
+    to_upload_ktx2_url: str
     x_access_token: str
     callback_url: str
     organization_id: str | None
@@ -44,8 +46,9 @@ async def create_upload_file(request: UrlToUrlRequest):
 
     download_url = request.url;
     upload_url = request.upload_url;
+    upload_ktx2_url = request.upload_ktx2_url;
 
-    upload_response = await convert_usdz_upload_glb(download_url, upload_url);
+    upload_response = await convert_usdz_upload_glb(download_url, upload_url, upload_ktx2_url);
 
     return {"success": True, 'upload_response': upload_response }
 
@@ -54,6 +57,7 @@ async def create_upload_file(request: UrlToUrlQueueRequest):
 
     download_url = request.to_convert_url;
     upload_url = request.to_upload_url;
+    upload_ktx2_url = request.to_upload_ktx2_url;
     
     payload = ResponseInfo();
     payload.x_access_token = request.x_access_token
@@ -68,7 +72,7 @@ async def create_upload_file(request: UrlToUrlQueueRequest):
     payload.firebase_device_token = request.firebase_device_token
     payload.model_name = request.model_name
 
-    await convert_and_send_confirmation(download_url, upload_url, payload)
+    await convert_and_send_confirmation(download_url, upload_url, upload_ktx2_url, payload)
 
     # lr_task_queue = get_task_queue()
     # job = lr_task_queue.enqueue(convert_and_send_confirmation, download_url, upload_url, payload)
