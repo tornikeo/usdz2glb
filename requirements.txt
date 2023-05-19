@@ -12,3 +12,5 @@ firebase_admin
 bpy
 requests
 DracoPy
+redis==4.0.2
+rq==1.10.0
