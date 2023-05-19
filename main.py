@@ -11,7 +11,7 @@ from ktx2_compress import ktx2_compression
 import bpy
 import requests
 from pydantic import BaseModel
-from service import convert_usdz_upload_glb;
+from service import convert_usdz_upload_glb, convert_and_send_confirmation, ResponseInfo;
 from task_queue import get_task_queue, get_job_information
 
 app = FastAPI(debug=True)
@@ -21,9 +21,20 @@ class UrlToUrlRequest(BaseModel):
     url: str
     upload_url: str
 
-class UrlToUrlSplitRequest(BaseModel):
-    url: str
-    upload_url: str
+class UrlToUrlQueueRequest(BaseModel):
+    to_convert_url: str
+    to_upload_url: str
+    x_access_token: str
+    callback_url: str
+    organization_id: str
+    device_name: str
+    lat: str
+    lon: str
+    session_id: str
+    scanning_type_id: str
+    subscription_type: str
+    firebase_device_token: str
+    model_name: str
 
 class JobInfoRequest(BaseModel):
     job_id: str
@@ -39,19 +50,26 @@ async def create_upload_file(request: UrlToUrlRequest):
     return {"success": True, 'upload_response': upload_response }
 
 @app.post("/convert-payload-async")
-async def create_upload_file(request: UrlToUrlRequest, background_tasks: BackgroundTasks):
+async def create_upload_file(request: UrlToUrlQueueRequest):
 
-    download_url = request.url;
-    upload_url = request.upload_url;
+    download_url = request.to_convert_url;
+    upload_url = request.to_upload_url;
     
+    payload = ResponseInfo();
+    payload.x_access_token = request.x_access_token
+    payload.callback_url = request.callback_url
+    payload.organization_id = request.organization_id
+    payload.device_name = request.device_name
+    payload.lat = request.lat
+    payload.lon = request.lon
+    payload.session_id = request.session_id
+    payload.scanning_type_id = request.scanning_type_id
+    payload.subscription_type = request.subscription_type
+    payload.firebase_device_token = request.firebase_device_token
+    payload.model_name = request.model_name
+
     lr_task_queue = get_task_queue()
-
-    print("STARTING")
-    print(download_url)
-    print(upload_url)
-
-    job = lr_task_queue.enqueue(helper, download_url, upload_url)
-
+    job = lr_task_queue.enqueue(convert_and_send_confirmation, download_url, upload_url, payload)
 
     return {"success": True, "job_id": job.id}
 
@@ -63,10 +81,3 @@ async def create_upload_file(request: JobInfoRequest):
     print(get_job_information(job_id))
 
     return {"success": True, "job_info": get_job_information(job_id).get_status()}
-
-get_job_information
-async def helper(download_url,upload_url):
-    print("CALLED")
-    res = await convert_usdz_upload_glb(download_url, upload_url)
-    print("DONE DONE DONE")
-    print(res)

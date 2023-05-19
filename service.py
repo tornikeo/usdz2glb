@@ -11,6 +11,18 @@ from ktx2_compress import ktx2_compression
 import bpy
 import requests
 
+class ResponseInfo():
+    x_access_token: str
+    callback_url: str
+    organization_id: str
+    device_name: str
+    lat: str
+    lon: str
+    session_id: str
+    scanning_type_id: str
+    subscription_type: str
+    firebase_device_token: str
+    model_name: str
 
 config = get_config();
 def convert_usdz_file_to_glb(file_usdz_src, file_glb_dest):
@@ -81,3 +93,24 @@ async def convert_usdz_upload_glb(url_download, url_upload):
         });
     
     return upload_result.status_code
+
+
+# TODO: Handle errors?
+async def convert_and_send_confirmation(url_download, url_upload, response_payload:ResponseInfo):
+    await convert_usdz_upload_glb(url_download, url_upload)
+
+    # Send Response  
+    payload = {
+        "organizationID": response_payload.organization_id if response_payload.organization_id else None,
+        "deviceName": response_payload.device_name if response_payload.device_name else None,
+        "sessionID": response_payload.session_id,
+        "scanningTypeID": response_payload.scanning_type_id,
+        "subscriptionType": response_payload.subscription_type,
+        "firebaseDeviceToken": response_payload.firebase_device_token,
+        "lat": response_payload.lat,
+        "lon": response_payload.lon,
+        "modelName": response_payload.model_name,
+    }
+
+    headers = {"x-access-token": response_payload.x_access_token}
+    requests.post(response_payload.callback_url, headers=headers, data=payload)
