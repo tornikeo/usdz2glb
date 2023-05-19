@@ -26,6 +26,7 @@ class ResponseInfo():
 
 config = get_config();
 def convert_usdz_file_to_glb(file_usdz_src, file_glb_dest):
+    print("Load USDZ File")
     bpy.ops.wm.read_factory_settings(use_empty=True)
     objs = [ob for ob in bpy.context.scene.objects if ob.type in ('CAMERA', 'MESH')]
     bpy.ops.object.delete({"selected_objects": objs})
@@ -57,7 +58,8 @@ def convert_usdz_file_to_glb(file_usdz_src, file_glb_dest):
             )
         else:
             raise HTTPException(detail=f"Provided zip file didn't have gltf or obj files in it {list(folder_unpacked.glob('*'))}.",status_code=500)
-
+    
+    print("Save GLB File")
     # TODO: Clear blender to save memory (if needed)
     bpy.ops.export_scene.gltf(
         filepath=str(file_glb_dest),
@@ -67,6 +69,8 @@ def convert_usdz_file_to_glb(file_usdz_src, file_glb_dest):
     )
 
 async def convert_usdz_upload_glb(url_download, url_upload):
+
+    print("Downloading USDZ File")
     # download file
     sess = Path(tempfile.mkdtemp())
     filename = 'upload.usdz'
@@ -76,14 +80,17 @@ async def convert_usdz_upload_glb(url_download, url_upload):
     filename = 'upload.glb'
     file_glb = sess / filename
 
+    print("Convert USDZ File")
     # Convert usdz file to glb file
     convert_usdz_file_to_glb(file_usdz, file_glb);
 
+    print("Run ktx2 compression")
     # Compress glb file using ktx2
     filename = 'upload_compressed.glb'
     file_glb_compressed = sess / filename
     upload_File = ktx2_compression(file_glb, file_glb_compressed)
 
+    print("Upload GLB File")
     # Upload file
     upload_result = requests.put(
         url_upload, 
@@ -112,5 +119,7 @@ async def convert_and_send_confirmation(url_download, url_upload, response_paylo
         "modelName": response_payload.model_name,
     }
 
+    print("Hit callback")
     headers = {"x-access-token": response_payload.x_access_token}
-    requests.post(response_payload.callback_url, headers=headers, data=payload)
+    res = requests.post(response_payload.callback_url, headers=headers, data=payload)
+    print(res)

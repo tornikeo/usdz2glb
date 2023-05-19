@@ -68,10 +68,12 @@ async def create_upload_file(request: UrlToUrlQueueRequest):
     payload.firebase_device_token = request.firebase_device_token
     payload.model_name = request.model_name
 
-    lr_task_queue = get_task_queue()
-    job = lr_task_queue.enqueue(convert_and_send_confirmation, download_url, upload_url, payload)
+    await convert_and_send_confirmation(download_url, upload_url, payload)
 
-    return {"success": True, "job_id": job.id}
+    # lr_task_queue = get_task_queue()
+    # job = lr_task_queue.enqueue(convert_and_send_confirmation, download_url, upload_url, payload)
+
+    return {"success": True, "job_id": 1}
 
 @app.post("/get_job_info")
 async def create_upload_file(request: JobInfoRequest):
