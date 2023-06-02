@@ -36,6 +36,7 @@ class UrlToUrlQueueRequest(BaseModel):
     scanning_type_id: str | None
     subscription_type: str | None
     firebase_device_token: str | None
+    model_folder: str | None
     model_name: str
 
 class JobInfoRequest(BaseModel):
@@ -47,7 +48,8 @@ async def create_upload_file(request: UrlToUrlRequest):
     download_url = request.url;
     upload_url = request.upload_url;
     upload_ktx2_url = request.upload_ktx2_url;
-
+    print("STARTED /convert-from-url-to-url")
+    print(download_url)
     upload_response = await convert_usdz_upload_glb(download_url, upload_url, upload_ktx2_url);
 
     return {"success": True, 'upload_response': upload_response }
@@ -58,7 +60,9 @@ async def create_upload_file(request: UrlToUrlQueueRequest):
     download_url = request.to_convert_url;
     upload_url = request.to_upload_url;
     upload_ktx2_url = request.to_upload_ktx2_url;
-    
+    print("STARTED /convert-payload-async")
+    print(download_url)
+
     payload = ResponseInfo();
     payload.x_access_token = request.x_access_token
     payload.callback_url = request.callback_url
@@ -71,6 +75,9 @@ async def create_upload_file(request: UrlToUrlQueueRequest):
     payload.subscription_type = request.subscription_type
     payload.firebase_device_token = request.firebase_device_token
     payload.model_name = request.model_name
+    payload.model_folder = request.model_folder
+    
+    print(payload.model_name)
 
     await convert_and_send_confirmation(download_url, upload_url, upload_ktx2_url, payload)
 
