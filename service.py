@@ -23,6 +23,7 @@ class ResponseInfo():
     subscription_type: str
     firebase_device_token: str
     model_name: str
+    model_folder: str
 
 config = get_config();
 def convert_usdz_file_to_glb(file_usdz_src, file_glb_dest):
@@ -126,9 +127,11 @@ async def convert_and_send_confirmation(url_download, url_upload, upload_ktx2_ur
         "lat": response_payload.lat,
         "lon": response_payload.lon,
         "modelName": response_payload.model_name,
+        "modelFolder": response_payload.model_folder
     }
 
     print("Hit callback")
+    print(response_payload.model_name)
     headers = {"x-access-token": response_payload.x_access_token}
     res = requests.post(response_payload.callback_url, headers=headers, data=payload)
     print(res)
