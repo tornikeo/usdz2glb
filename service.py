@@ -132,6 +132,7 @@ async def convert_and_send_confirmation(url_download, url_upload, upload_ktx2_ur
 
     print("Hit callback")
     print(response_payload.model_name)
+    print(response_payload.callback_url)
     headers = {"x-access-token": response_payload.x_access_token}
     res = requests.post(response_payload.callback_url, headers=headers, data=payload)
     print(res)
